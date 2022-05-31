@@ -1,0 +1,7 @@
+# copy-vector scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/split1/1/vad.scp ark,t:- | sed -e "s/\[ //g;s/ \]//g" | utils/segmentation.pl --silence-proportion 0.01001 --remove-noise-only-segments false > /home/wghezaiel/Project_2/dia_xvector/egs/exp/data/split1/1/subsegments 
+# Started at Tue May 31 15:27:59 CEST 2022
+#
+copy-vector scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/split1/1/vad.scp ark,t:- 
+LOG (copy-vector[5.5.1009~1-e4940]:main():copy-vector.cc:90) Copied 1 vectors.
+# Accounting: time=0 threads=1
+# Ended (code 0) at Tue May 31 15:27:59 CEST 2022, elapsed time 0 seconds

@@ -182,10 +182,7 @@ def trainKBM(data, windowLength, windowRate, kbmSize):
     
 def getVgMatrix(data, gmPool, kbm, topGaussiansPerFrame):
     logLikelihoodTable = getLikelihoodTable(data,gmPool,kbm)
-    #Vg = np.argsort(-logLikelihoodTable)[:,0:topGaussiansPerFrame]
-    partition_args = np.argpartition(-logLikelihoodTable, 5, axis=1)[:, :5]
-    partition = np.take_along_axis(-logLikelihoodTable, partition_args, axis=1)
-    Vg = np.take_along_axis(partition_args, np.argsort(partition), axis=1)
+    Vg = np.argsort(-logLikelihoodTable)[:,0:topGaussiansPerFrame]
     return Vg
 
 def getLikelihoodTable(data, gmPool, kbm):
@@ -543,7 +540,7 @@ def sim_enhancement(A):
         A = f(A)
     return A
     
-def getSpectralClustering(bestClusteringMetric,N_init, bkT, cvT, number_speaker, n, sigma, percentile, maxNrSpeakers):
+def getSpectralClustering(bestClusteringMetric,clusteringTable,N_init, bkT, cvT, number_speaker, n, sigma, percentile, maxNrSpeakers):
     if number_speaker is None:
         #  Compute affinity matrix.
         affinity = compute_affinity_matrix(cvT)
