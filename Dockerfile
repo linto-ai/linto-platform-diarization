@@ -1,39 +1,20 @@
-FROM python:3.9
-LABEL maintainer="irebai@linagora.com, rbaraglia@linagora.com, wghezaiel@linagora.com"
+FROM ubuntu:latest
 
-RUN apt-get update &&\
-    apt-get install -y \
-    nano \
-    sox  \
-    ffmpeg \
-    software-properties-common \
-    wget \
-    curl \
-    lsb-release && \
-    apt-get clean
+RUN apt-get update && \
+    apt-get install -y g++ zlib1g-dev make automake libtool-bin git autoconf && \
+    apt-get install -y subversion libatlas3-base bzip2 wget python2.7 python3 && \
+    ln -s /usr/bin/python2.7 /usr/bin/python && \
+    ln -s -f bash /bin/sh
 
-# Install pyBK dependencies
-RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
-RUN ./llvm.sh 11
-RUN export LLVM_CONFIG=/usr/bin/llvm-config-10
-    
+RUN git clone https://github.com/kaldi-asr/kaldi /opt/kaldi
+RUN cd /opt/kaldi/tools && make && find /opt/kaldi/tools -type f -name "*.o" -delete
+RUN cd /opt/kaldi/src && ./configure --shared && make depend && make && find /opt/kaldi/src -type f -name "*.o" -delete
+RUN rm -rf /opt/kaldi/.git
+
+WORKDIR /opt/kaldi
+
 # Install python dependencies
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Define the main folder
-WORKDIR /usr/src/app
-
-COPY diarization /usr/src/app/diarization
-COPY celery_app /usr/src/app/celery_app
-COPY http_server /usr/src/app/http_server
-COPY document /usr/src/app/document
-COPY pyBK/diarizationFunctions.py pyBK/diarizationFunctions.py
-COPY docker-entrypoint.sh wait-for-it.sh healthcheck.sh ./
-
-ENV PYTHONPATH="${PYTHONPATH}:/usr/src/app/diarization"
-
-HEALTHCHECK CMD ./healthcheck.sh
-
-# Entrypoint handles the passed arguments
-ENTRYPOINT ["./docker-entrypoint.sh"]
+RUN pip3 install -r requirements.txt
+RUN git clone https://github.com/tango4j/Auto-Tuning-Spectral-Clustering.git
+CMD [ "sh", "-c", "service ssh start; bash"]

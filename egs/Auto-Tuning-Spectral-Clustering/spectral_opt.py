@@ -459,6 +459,7 @@ class GraphSpectralClusteringClass(object):
                 Y = self.PLDAclustering(idx, key, mat, mat_spkcount, self.param)
             elif 'cos' in self.param.score_metric:
                 Y = self.COSclustering(idx, key, mat, mat_spkcount, self.param)
+                
             else:
                 raise ValueError('self.param.score_metric contains invalid score metric:', self.param.score_metric)
            
@@ -609,7 +610,6 @@ class GraphSpectralClusteringClass(object):
         '''
         if param.reco2num_spk != 'None': 
             est_num_of_spk = int(self.reco2num_dict[key])
-            print(est_num_of_spk)
             ### Use the given number of speakers
             est_num_of_spk = min(est_num_of_spk, param.max_speaker) 
             # _, lambdas, lambda_gap_list = estimate_num_of_spkrs(X_conn_from_dist, param.max_speaker)
@@ -618,7 +618,7 @@ class GraphSpectralClusteringClass(object):
         else: 
             ### Estimate the number of speakers in the given session
             self.print_status_estNspk(idx, key, mat, rp_threshold, est_num_of_spk, param)
-            print(est_num_of_spk)
+
         
         lambdas_str = ' '.join([ str(x) for x in lambdas ] )
         self.lambdas_list.append(key + " " + lambdas_str)
@@ -684,7 +684,6 @@ class GraphSpectralClusteringClass(object):
         if param.reco2num_spk != 'None': 
             ### Use the given number of speakers
             est_num_of_spk = int(self.reco2num_dict[key])
-            
             self.print_status_givenNspk(self, idx, key, mat_spkcount, est_num_of_spk, param)
 
         else: 

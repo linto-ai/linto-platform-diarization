@@ -150,6 +150,4 @@ curl -X POST "http://YOUR_SERVICE:PORT/diarization" -H  "accept: application/jso
 ## License
 This project is developped under the AGPLv3 License (see LICENSE).
 
-## Acknowlegment.
 
-* [PyBK](https://github.com/josepatino/pyBK) diarization framework (License MIT).

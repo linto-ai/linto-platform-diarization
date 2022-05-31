@@ -1,9 +1,0 @@
-# apply-cmvn-sliding --norm-vars=false --center=true --cmn-window=300 scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented/split1/1/feats.scp ark:- | copy-feats --compress=true --write-num-frames=ark,t:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented_cmn/feats/log/utt2num_frames.1 ark:- ark,scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented_cmn/feats/xvector_cmvn_feats_segmented.1.ark,/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented_cmn/feats/xvector_cmvn_feats_segmented.1.scp 
-# Started at Tue May 31 15:27:59 CEST 2022
-#
-apply-cmvn-sliding --norm-vars=false --center=true --cmn-window=300 scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented/split1/1/feats.scp ark:- 
-copy-feats --compress=true --write-num-frames=ark,t:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented_cmn/feats/log/utt2num_frames.1 ark:- ark,scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented_cmn/feats/xvector_cmvn_feats_segmented.1.ark,/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/segmented_cmn/feats/xvector_cmvn_feats_segmented.1.scp 
-LOG (apply-cmvn-sliding[5.5.1009~1-e4940]:main():apply-cmvn-sliding.cc:75) Applied sliding-window cepstral mean normalization to 19 utterances, 0 had errors.
-LOG (copy-feats[5.5.1009~1-e4940]:main():copy-feats.cc:143) Copied 19 feature matrices.
-# Accounting: time=0 threads=1
-# Ended (code 0) at Tue May 31 15:27:59 CEST 2022, elapsed time 0 seconds

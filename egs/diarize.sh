@@ -5,14 +5,14 @@
 start=$(date +%s.%N)
 
 currDir=$PWD
-kaldiDir=/home/wghezaiel/kaldi
+kaldiDir=/opt/kaldi
 expDir=$currDir/exp
 wavDir=$currDir/in_wavs
 labDir=$currDir/lab
 rttmDir=$currDir/rttm
 wavList=$currDir/wavList
 readlink -f $wavDir/* > $wavList
-
+mkdir $rttmDir
 # Extraction parameters
 window=1.5
 window_period=0.75
@@ -25,15 +25,15 @@ modelDir=$currDir/model_xvec
 modelType=xvecTDNN
 layerName=fc3
 method=SC
-useCollar=0
+
 skipDataPrep=0
 dataDir=$expDir/data
 nj=1
 n_spk=$1
 max_spk=$2
 
-bash run_vad.sh $wavDir $labDir
-
+#bash run_vad.sh $wavDir $labDir
+python main_get_vad.py --wav_dir $wavDir --output_dir $labDir --mode 0 --hoplength 30 || exit 1
 for label in $(ls $labDir); do
    
    cd $labDir
@@ -50,31 +50,46 @@ done
  
 cd .. 
 
+#if [[ "$method" == "SC" ]] && [[ ! -d Auto-Tuning-Spectral-Clustering ]]; then
+#  echo "Please install https://github.com/tango4j/Auto-Tuning-Spectral-Clustering"
+#  git clone https://github.com/tango4j/Auto-Tuning-Spectral-Clustering.git
   
+#fi
+
+#if [[ ! -d dscore ]]; then
+#  echo "Please install https://github.com/nryant/dscore"
+#  exit 1
+#fi
+
+for f in diarization local; do
+  [ ! -L $f ] && ln -s $kaldiDir/egs/callhome_diarization/v2/$f;
+done  
+
+for f in sid steps utils conf; do
+  [ ! -L $f ] && ln -s $kaldiDir/egs/voxceleb/v2/$f;
+done  
 
 
-if [[ "$useCollar" == "1" ]]; then
-  collarCmd="--collar 0.25 --ignore_overlaps"
-else
-  collarCmd="--ignore_overlaps"
-fi
 
 . ./cmd.sh
 . ./path.sh
 
 # Kaldi directory preparation
+rm -rf $expDir; mkdir -p $dataDir
+python data_preparation_kaldi.py $wavDir $dataDir
+
 if [ "$skipDataPrep" == "0" ]; then
 
-  rm -rf $expDir; mkdir -p $dataDir
-  paste -d ' ' <(rev $wavList | cut -f 1 -d '/' | rev | sed "s/\.wav$/-rec/g") \
-    <(cat $wavList | xargs readlink -f) > $dataDir/wav.scp
-  paste -d ' ' <(cut -f 1 -d ' ' $dataDir/wav.scp | sed "s/-rec$//g") \
-    <(cut -f 1 -d ' ' $dataDir/wav.scp | sed "s/-rec$//g") > $dataDir/utt2spk
-  cp $dataDir/utt2spk $dataDir/spk2utt
-  numUtts=`wc -l $dataDir/utt2spk | cut -f 1 -d ' '`
-  paste -d ' ' <(cut -f 1 -d ' ' $dataDir/utt2spk) \
-    <(cut -f 1 -d ' ' $dataDir/wav.scp) <(yes "0" | head -n $numUtts) <(cat $wavList | xargs soxi -D) \
-    >  $dataDir/segments
+  #rm -rf $expDir; mkdir -p $dataDir
+  #paste -d ' ' <(rev $wavList | cut -f 1 -d '/' | rev | sed "s/\.wav$/-rec/g") \
+   # <(cat $wavList | xargs readlink -f) > $dataDir/wav.scp
+  #paste -d ' ' <(cut -f 1 -d ' ' $dataDir/wav.scp | sed "s/-rec$//g") \
+   # <(cut -f 1 -d ' ' $dataDir/wav.scp | sed "s/-rec$//g") > $dataDir/utt2spk
+  #cp $dataDir/utt2spk $dataDir/spk2utt
+  #numUtts=`wc -l $dataDir/utt2spk | cut -f 1 -d ' '`
+  #paste -d ' ' <(cut -f 1 -d ' ' $dataDir/utt2spk) \
+   # <(cut -f 1 -d ' ' $dataDir/wav.scp) <(yes "0" | head -n $numUtts) <(cat $wavList | xargs soxi -D) \
+   # >  $dataDir/segments
   for rttmFile in $rttmDir/*.rttm; do
     #n=`cut -f 8 -d ' ' $rttmFile | sort | uniq | wc -l`
     #n = 4
@@ -185,6 +200,8 @@ else
 			       --spk_labels_out_path $expDir/SC/labels_estNumSpkr \
 			       --sparse_search True || exit 1
 		  mkdir -p $expDir/SC/clustering_estNumSpkr
+		  python sc_utils/make_rttm.py $dataDir/kaldi_xvectors/segments \
+		    $expDir/SC/labels_estNumSpkr $expDir/SC/clustering_estNumSpkr/rttm
 		  
 	  
 	  else
@@ -209,6 +226,8 @@ else
 			       --spk_labels_out_path $expDir/SC/labels_estNumSpkr \
 			       --sparse_search True || exit 1
 		  mkdir -p $expDir/SC/clustering_estNumSpkr
+		  python sc_utils/make_rttm.py $dataDir/kaldi_xvectors/segments \
+		    $expDir/SC/labels_estNumSpkr $expDir/SC/clustering_estNumSpkr/rttm
 		  
 	  
 	  else
@@ -229,7 +248,7 @@ else
 
 fi
 
-# Evaluation
+
 end=$(date +%s.%N) 
 runtime=$(python -c "print(${end} - ${start})")
 echo "Runtime was $runtime"

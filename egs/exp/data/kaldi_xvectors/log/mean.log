@@ -1,6 +1,0 @@
-# ivector-mean scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/kaldi_xvectors//xvector.scp /home/wghezaiel/Project_2/dia_xvector/egs/exp/data/kaldi_xvectors//mean.vec 
-# Started at Tue May 31 15:28:04 CEST 2022
-#
-ivector-mean scp:/home/wghezaiel/Project_2/dia_xvector/egs/exp/data/kaldi_xvectors//xvector.scp /home/wghezaiel/Project_2/dia_xvector/egs/exp/data/kaldi_xvectors//mean.vec 
-# Accounting: time=0 threads=1
-# Ended (code 0) at Tue May 31 15:28:04 CEST 2022, elapsed time 0 seconds
